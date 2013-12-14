@@ -1,0 +1,12 @@
+This program is mainly created for me to experiment with gtk3/glade on Haskell.
+It's my first git project, so it has the additional purpose of learning the
+git interface to get involved with some open source projects. If you're
+reading this, and interested in working on some sort of open source project
+together, feel free to let me know. My e-mail address is nathantjcc@gmail.com,
+and I'm interested in game programing, ai, and evolutionary algorithms.
+
+
+As for this particular code, it uses a simply RSA algorithm for encrypting/
+decrypting text files. It also generates public/private key pairs. 
+
+
