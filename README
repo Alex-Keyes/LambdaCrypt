@@ -7,4 +7,11 @@ Note well: This is not, nor is meant to currently be, industry
 strength RSA. I might implement that in the future, or just 
 make this be a front end for the existing RSA library implementation.
 
+Installing with cabal should be straightforward. Just download the
+file tree and run:
+cabal configure
+cabal build
+
+and then either cabal install to install it in your bin, or just
+run the exe located at ./dist/build/LambdaCrypt/LambdaCrypt
 

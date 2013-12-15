@@ -1,7 +1,7 @@
 module Main (main) where
 
 --import my own modules
-import Primality
+
 import RSA
 
 
@@ -186,7 +186,7 @@ main = do
                                                
                             postGUISync $ 
                                textBufferInsertAtCursor log $
-                                   " • The decrypted data is as follows:\n" ++ m  ++ "\n"  --lag here on large texts being posted to textBuffer. TODO
+                                   " • The decrypted data is as follows:\n" ++ m ++ "\n"  --lag here on large texts being posted to textBuffer. TODO
                             
                             widgetSetSensitive decryptButton True
                             widgetSetSensitive ciphertextFileChooser True

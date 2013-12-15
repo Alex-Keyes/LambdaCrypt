@@ -31,38 +31,47 @@ generateAndSaveKeys name = do
 encryptToFile :: String -> String -> IO ()
 encryptToFile plaintextFilePath publicKeyFilePath = do
        
-        rawMessage <- readFile plaintextFilePath --lazy read, perhaps use strict instead?
-
+        message <- readFile plaintextFilePath --lazy read, perhaps use strict instead?
         k <- loadKey publicKeyFilePath
     
-        let blocks = map integerFromText $ splitEvery 50 rawMessage
-            (n,e) = getDataFromKey k
-            cList = map (\m -> encrypt m e n) blocks
-            
-        saveCipher (Cipher cList) (plaintextFilePath ++ ".cipher") 
+        let ciphertext = encrypt message k
+         
+        saveCipher ciphertext (plaintextFilePath ++ ".cipher") 
         
-        
+   
 decryptFile :: String -> String -> IO String
 decryptFile ciphertextFilePath privateKeyFilePath = do
-    ciph <- loadCipher ciphertextFilePath
-    k <- loadKey privateKeyFilePath
-
-    let (n,d) = getDataFromKey k
-        cList = getDataFromCipher ciph
-        m = concatMap (\c -> textFromInteger (decrypt c d n)) cList
-                                
-    return m
+    ciphertext <- loadCipher ciphertextFilePath
+    privatekey <- loadKey privateKeyFilePath
+          
+    return $! decrypt ciphertext privatekey 
  
+ 
+ 
+encrypt :: String -> Key -> Cipher
+encrypt plaintext privatekey  
+    = Cipher $ map (\m -> encryptRSA m e n) blocks
+    where blocks = map integerFromText $ splitEvery 50 plaintext
+          (n,e) = getDataFromKey privatekey
+                    
+    
 
+decrypt :: Cipher -> Key -> String
+decrypt ciphertext publickey 
+    = concatMap (\c -> textFromInteger (decryptRSA c d n)) blocks
+    where (n,d) = getDataFromKey publickey
+          blocks = getDataFromCipher ciphertext
+
+      
 --encrypts a large integer, m, by the public exponent
 --and the public modulus. 
-encrypt :: Integer -> Integer -> Integer -> Integer
-encrypt m e n = expMod m e n
+encryptRSA :: Integer -> Integer -> Integer -> Integer
+encryptRSA m e n = expMod m e n
 
 --decryptes a large integer, b, by the private exponent
 --and the public modulus
-decrypt :: Integer -> Integer -> Integer -> Integer
-decrypt c d n = expMod c d n
+decryptRSA :: Integer -> Integer -> Integer -> Integer
+decryptRSA c d n = expMod c d n
 
 
 findD :: Integer -> IO Integer

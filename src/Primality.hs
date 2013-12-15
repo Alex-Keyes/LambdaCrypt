@@ -28,6 +28,12 @@ pseudoprime a p = expMod a (p-1) p == 1
 isProbablyPrime :: Integer -> Integer -> Bool
 isProbablyPrime n k 
     | any (\b -> not (pseudoprime b n)) [2..7] = False --makes sure that n is at least a base-b pseudoprime (where b <- [2..7])
+    -- | not (pseudoprime 2 n) = False
+    -- | not (pseudoprime 3 n) = False
+    -- | not (pseudoprime 4 n) = False
+    -- | not (pseudoprime 5 n) = False
+    -- | not (pseudoprime 6 n) = False
+    -- | not (pseudoprime 7 n) = False
     | otherwise = all (\a -> failToGiveWitness (expMod a d n) ) witnesses
    
    where witnesses = take (fromIntegral k) $ randomRs(2::Integer,(n-2)::Integer) myStdGen
