@@ -1,0 +1,22 @@
+name:           LambdaCrypt
+version:        0.1
+cabal-version:  >=1.2
+build-type:     Simple
+author:         lykos
+data-files:     
+                resources/Haskell-Logo.svg, 
+                resources/rsaGUI.glade
+
+executable LambdaCrypt
+  hs-source-dirs:  src
+  main-is:         Main.hs
+  build-depends:  base >= 4,
+                  gtk3 >= 0.12.5.0,
+                  random >= 1,
+                  mtl >= 2
+
+  ghc-options:    -O2 -threaded
+  other-modules:   
+                   Primality,
+                   RSA,
+                   NumberTheory

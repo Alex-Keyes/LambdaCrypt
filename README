@@ -1,12 +1,10 @@
-This program is mainly created for me to experiment with gtk3/glade on Haskell.
-It's my first git project, so it has the additional purpose of learning the
-git interface to get involved with some open source projects. If you're
-reading this, and interested in working on some sort of open source project
-together, feel free to let me know. My e-mail address is nathantjcc@gmail.com,
-and I'm interested in game programing, ai, and evolutionary algorithms.
+This is a project I did partly for class, and partly for fun and for 
+learning more about gtk/glade with Haskell.
 
-
-As for this particular code, it uses a simply RSA algorithm for encrypting/
-decrypting text files. It also generates public/private key pairs. 
+This program can generate RSA public keys, and can encrypt and 
+decrypt text files with them. 
+Note well: This is not, nor is meant to currently be, industry
+strength RSA. I might implement that in the future, or just 
+make this be a front end for the existing RSA library implementation.
 
 
