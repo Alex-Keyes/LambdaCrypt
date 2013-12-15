@@ -11,7 +11,8 @@ Installing with cabal should be straightforward. Just download the
 file tree and run:
 cabal configure
 cabal build
+cabal install
 
-and then either cabal install to install it in your bin, or just
-run the exe located at ./dist/build/LambdaCrypt/LambdaCrypt
-
+Cabal install is nessesary here, because the resources are copied
+to your .cabal file during the installing, and that's where the
+program tries to locate them.

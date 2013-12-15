@@ -106,6 +106,7 @@ main = do
             path <- fileChooserGetFilename keyGenFolderChooser 
             --TODO: Enforce folder selection/name entry
             --currently can crash the thread with a fromJust (Nothing)
+                
             
             forkIO $ do           
                 postGUISync $ do
@@ -133,10 +134,8 @@ main = do
          plaintextFilePath <- fileChooserGetFilename plaintextFileChooser
          publicKeyFilePath <- fileChooserGetFilename publicKeyFileChooser
 
-   --TODO: polish up these callbacks, separate it into functions
-         _ <- forkFinally  
-            (do 
-                
+         _ <- forkFinally 
+            ( do
                 postGUISync $ 
                     textBufferInsertAtCursor log $
                         " • Encrypting data...\n"  
@@ -148,8 +147,13 @@ main = do
                 postGUISync $ 
                     textBufferInsertAtCursor log $
                          " • Encrypted data written to " ++ fromJust plaintextFilePath ++ ".cipher\n"
-             )
-            ( \e -> do{putStrLn ("Thread exited with exception:  " ++ show e);widgetSetSensitive encryptButton True;widgetSetSensitive plaintextFileChooser True})
+                 
+            )
+            (\e -> do  
+                putStrLn $ "Thread exited with exception:  " ++ show e 
+                widgetSetSensitive encryptButton True
+                widgetSetSensitive plaintextFileChooser True
+            )
          widgetSetSensitive plaintextFileChooser False
          widgetSetSensitive encryptButton False
 
@@ -191,7 +195,11 @@ main = do
                             widgetSetSensitive decryptButton True
                             widgetSetSensitive ciphertextFileChooser True
                         )
-                       (\e -> do{putStrLn ("Thread exited with exception " ++ show e);widgetSetSensitive decryptButton True;widgetSetSensitive ciphertextFileChooser True})
+                       (\e -> do
+                            putStrLn ("Thread exited with exception " ++ show e)
+                            widgetSetSensitive decryptButton True
+                            widgetSetSensitive ciphertextFileChooser True
+                       )
                  return()   
                  
                               
