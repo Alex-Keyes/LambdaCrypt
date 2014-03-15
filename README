@@ -1,8 +1,7 @@
 This is a project I did partly for class, and partly for fun and for 
 learning more about gtk/glade with Haskell.
 
-Here's a screenshot:
-![](http://i.imgur.com/ebuHuem.png)
+![IMAGE](http://i.imgur.com/ebuHuem.png)
 
 
 This program can generate RSA public keys, and can encrypt and 
