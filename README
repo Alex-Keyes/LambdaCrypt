@@ -1,9 +1,8 @@
-
 This is a project I did partly for class, and partly for fun and for 
 learning more about gtk/glade with Haskell.
 
 Here's a screenshot:
-![The parts that currently display "(None)" are able to select local files] (http://painterandhacker.imgur.com/all/)
+![The parts that currently display "(None)" are able to select local files] (http://imgur.com/ebuHuem)
 
 
 This program can generate RSA public keys, and can encrypt and 
