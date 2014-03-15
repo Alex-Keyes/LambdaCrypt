@@ -16,77 +16,80 @@ import Paths_LambdaCrypt
 
 main :: IO ()
 main = do
-    _ <- initGUI
-    builder <- builderNew
+     initGUI
+     builder <- builderNew
 
-    gladePath <- getDataFileName "resources/rsaGUI.glade"
-    builderAddFromFile builder gladePath
-    mainWindow <- builderGetObject builder castToWindow "mainWindow"
+     gladePath <- getDataFileName "resources/rsaGUI.glade"
+     builderAddFromFile builder gladePath
+     mainWindow <- builderGetObject builder castToWindow "mainWindow"
 
-    newKeypairButton <- builderGetObject builder castToButton "newKeypairButton"
-    encryptButton <- builderGetObject builder castToButton "encryptButton"
-    decryptButton <- builderGetObject builder castToButton "decryptButton"
+     newKeypairButton <- builderGetObject builder castToButton "newKeypairButton"
+     encryptButton <- builderGetObject builder castToButton "encryptButton"
+     decryptButton <- builderGetObject builder castToButton "decryptButton"
    
-    privateKeyFileChooser <- builderGetObject builder castToFileChooserButton "privateKeyFileChooser"
-    publicKeyFileChooser <- builderGetObject builder castToFileChooserButton "publicKeyFileChooser"
+     privateKeyFileChooser <- builderGetObject builder castToFileChooserButton "privateKeyFileChooser"
+     publicKeyFileChooser <- builderGetObject builder castToFileChooserButton "publicKeyFileChooser"
 
-    plaintextFileChooser <- builderGetObject builder castToFileChooserButton "plaintextFileChooser"
-    ciphertextFileChooser <- builderGetObject builder castToFileChooserButton "ciphertextFileChooser"
+     plaintextFileChooser <- builderGetObject builder castToFileChooserButton "plaintextFileChooser"
+     ciphertextFileChooser <- builderGetObject builder castToFileChooserButton "ciphertextFileChooser"
 
     -- load the key generation popup window and sub-widgets
-    keyGenDialog <- builderGetObject builder castToDialog "keyGenDialog"
-    keyGenFolderChooser <- builderGetObject builder castToFileChooserButton "keyGenFolderChooser"
-    keyGenNameEntry <- builderGetObject builder castToEntry "keyGenNameEntry"
-    keyGenUpper <- builderGetObject builder castToTable "keyGenUpper"
-    -------------------------------------------------------
+     keyGenDialog <- builderGetObject builder castToDialog "keyGenDialog"
+     keyGenFolderChooser <- builderGetObject builder castToFileChooserButton "keyGenFolderChooser"
+     keyGenNameEntry <- builderGetObject builder castToEntry "keyGenNameEntry"
+     keyGenUpper <- builderGetObject builder castToTable "keyGenUpper"
+     -------------------------------------------------------
     
-    -- prepare the dialog
+     -- prepare the dialog
     
-    _ <- dialogAddButton keyGenDialog "gtk-cancel" ResponseCancel
-    _ <- dialogAddButton keyGenDialog "gtk-apply" ResponseApply
+     dialogAddButton keyGenDialog "gtk-cancel" ResponseCancel
+     dialogAddButton keyGenDialog "gtk-apply" ResponseApply
     
-    contents <- dialogGetContentArea keyGenDialog  
+     contents <- dialogGetContentArea keyGenDialog  
     
-    let contentsVbox= castToBox contents
-       in boxPackStart contentsVbox keyGenUpper PackGrow 0 
-    -----------------------------------------------------------
-    
-    _ <- fileChooserSetCurrentFolder plaintextFileChooser "." 
-    _ <- fileChooserSetCurrentFolder ciphertextFileChooser "." 
-    
-    _ <- fileChooserSetCurrentFolder publicKeyFileChooser "." 
-    _ <- fileChooserSetCurrentFolder privateKeyFileChooser "." 
-
-    _ <- fileChooserSetCurrentFolder keyGenFolderChooser "."
+     let contentsVbox= castToBox contents
+        in boxPackStart contentsVbox keyGenUpper PackGrow 0 
+     -----------------------------------------------------------
 
 
-    log <- builderGetObject builder castToTextBuffer "log"
+     --Set all the file selector widgets to use current
+     --directory as their default  
+     fileChooserSetCurrentFolder plaintextFileChooser "." 
+     fileChooserSetCurrentFolder ciphertextFileChooser "." 
+    
+     fileChooserSetCurrentFolder publicKeyFileChooser "." 
+     fileChooserSetCurrentFolder privateKeyFileChooser "." 
+
+     fileChooserSetCurrentFolder keyGenFolderChooser "."
+     ------------------------------------------------------------
+
+     logBuffer <- builderGetObject builder castToTextBuffer "log"
 
 
-    clearButton <- builderGetObject builder castToButton "clearButton"
-    copyButton <- builderGetObject builder castToButton "copyButton"
-    saveButton <- builderGetObject builder castToButton "saveButton"
+     clearButton <- builderGetObject builder castToButton "clearButton"
+     copyButton <- builderGetObject builder castToButton "copyButton"
+     saveButton <- builderGetObject builder castToButton "saveButton" 
 
 
     --windowSetDefaultIconFromFile "/usr/share/icons/gnome/scalable/apps/Haskell-Logo.svg"
-    iconPath <- getDataFileName "resources/Haskell-Logo.svg"
-    _ <- windowSetDefaultIconFromFile iconPath
+     iconPath <- getDataFileName "resources/Haskell-Logo.svg"
+     windowSetDefaultIconFromFile iconPath
 
-    textBufferInsertAtCursor log $
+     textBufferInsertAtCursor logBuffer $
         " • Welcome to λCrypt! This program generates RSA public and private keys, and uses them to decrypt and encrypt files.\n"
 
 
-    _ <- clearButton `on` buttonActivated $ do
-        (start,end) <- textBufferGetBounds log
-        textBufferDelete log start end
+     clearButton `on` buttonActivated $ do
+        (start,end) <- textBufferGetBounds logBuffer
+        textBufferDelete logBuffer start end
 
-    _ <- copyButton `on` buttonActivated  $ do
-        txt <- get log (textBufferText)
+     copyButton `on` buttonActivated  $ do
+        txt <- get logBuffer (textBufferText)
         cb <- clipboardGet selectionClipboard
         clipboardSetText cb txt    
 
    
-    _ <- mainWindow `on` keyPressEvent $ do
+     mainWindow `on` keyPressEvent $ do
            k <- eventKeyVal 
            liftIO $ do
               if keyName k == "Escape"
@@ -94,7 +97,7 @@ main = do
                   else return ()
            return False
 
-    _ <- newKeypairButton `on` buttonActivated $ do
+     newKeypairButton `on` buttonActivated $ do
         
         widgetSetSensitive newKeypairButton False                    
         resp <- dialogRun keyGenDialog
@@ -110,7 +113,7 @@ main = do
             
             forkIO $ do           
                 postGUISync $ do
-                    textBufferInsertAtCursor log $    
+                    textBufferInsertAtCursor logBuffer $    
                         " • Generating the RSA keys. This may take awhile.\n"                   
                                 
                 let fullPath = (fromJust path) ++ "/" ++ name                   
@@ -119,7 +122,7 @@ main = do
      
         
                 postGUISync $ do
-                    textBufferInsertAtCursor log $
+                    textBufferInsertAtCursor logBuffer $
                         " • RSA keys written to " ++ fullPath ++ ".pri and " ++ fullPath ++ ".pub\n"   
                 widgetSetSensitive newKeypairButton True
             widgetHide keyGenDialog
@@ -130,14 +133,14 @@ main = do
             return ()
         
 
-    _ <- encryptButton `on` buttonActivated $ do 
+     encryptButton `on` buttonActivated $ do 
          plaintextFilePath <- fileChooserGetFilename plaintextFileChooser
          publicKeyFilePath <- fileChooserGetFilename publicKeyFileChooser
 
-         _ <- forkFinally 
+         forkFinally 
             ( do
                 postGUISync $ 
-                    textBufferInsertAtCursor log $
+                    textBufferInsertAtCursor logBuffer $
                         " • Encrypting data...\n"  
         
                 --throws an exception (caught by forkFinally) if either paths are nothing
@@ -145,12 +148,17 @@ main = do
                 encryptToFile (fromJust plaintextFilePath) (fromJust publicKeyFilePath)     
                 
                 postGUISync $ 
-                    textBufferInsertAtCursor log $
+                    textBufferInsertAtCursor logBuffer $
                          " • Encrypted data written to " ++ fromJust plaintextFilePath ++ ".cipher\n"
                  
             )
+            
             (\e -> do  
-                putStrLn $ "Thread exited with exception:  " ++ show e 
+                postGUISync $ 
+                    textBufferInsertAtCursor logBuffer $
+                        --"Thread exited with exception:  " ++ show e 
+                        "Encryption failed. Make you you have a plaintext file selected, and a public key selected.\n"
+                        
                 widgetSetSensitive encryptButton True
                 widgetSetSensitive plaintextFileChooser True
             )
@@ -158,7 +166,7 @@ main = do
          widgetSetSensitive encryptButton False
 
   
-    _ <- decryptButton `on` buttonActivated $ do
+     decryptButton `on` buttonActivated $ do
                  ciphertextFilePath <- fileChooserGetFilename ciphertextFileChooser
                  privateKeyFilePath <- fileChooserGetFilename privateKeyFileChooser
         
@@ -171,11 +179,11 @@ main = do
                  -- figure out why in the world I have to declare the widgets insensitive after the fork. My guess is file isn't being 
                  -- chosen from the fileSelector strictly?
                 
-                 _ <- forkFinally
+                 forkFinally
                        ( do
                     
                             postGUISync $ 
-                                 textBufferInsertAtCursor log $
+                                 textBufferInsertAtCursor logBuffer $
                                      " • Decrypting data...\n"
                             
                                               -- needs to be in here or thread won't work. I'm guessing that the inital call to SetSensitive is queued and doesn't 
@@ -189,26 +197,30 @@ main = do
        
                                                
                             postGUISync $ 
-                               textBufferInsertAtCursor log $
+                               textBufferInsertAtCursor logBuffer $
                                    " • The decrypted data is as follows:\n" ++ m ++ "\n"  --lag here on large texts being posted to textBuffer. TODO
                             
                             widgetSetSensitive decryptButton True
                             widgetSetSensitive ciphertextFileChooser True
                         )
                        (\e -> do
-                            putStrLn ("Thread exited with exception " ++ show e)
+                            --putStrLn ("Thread exited with exception " ++ show e)
+                            postGUISync $ 
+                                 textBufferInsertAtCursor logBuffer $
+                                     " Decryption has failed. Make sure you have a ciphertext file selected, and a private key selected.\n"
+                            
                             widgetSetSensitive decryptButton True
                             widgetSetSensitive ciphertextFileChooser True
                        )
                  return()   
                  
                               
-    _ <- mainWindow `on` deleteEvent $ do
+     mainWindow `on` deleteEvent $ do
            liftIO
                mainQuit
            return False
 
 
-    widgetShowAll mainWindow 
+     widgetShowAll mainWindow 
 
-    mainGUI
+     mainGUI
