@@ -14,6 +14,9 @@ import Control.Concurrent
 import Paths_LambdaCrypt
 
 
+
+  
+
 main :: IO ()
 main = do
      initGUI
@@ -70,8 +73,7 @@ main = do
      copyButton <- builderGetObject builder castToButton "copyButton"
      saveButton <- builderGetObject builder castToButton "saveButton" 
 
-
-    --windowSetDefaultIconFromFile "/usr/share/icons/gnome/scalable/apps/Haskell-Logo.svg"
+     --windowSetDefaultIconFromFile "/usr/share/icons/gnome/scalable/apps/Haskell-Logo.svg"
      iconPath <- getDataFileName "resources/Haskell-Logo.svg"
      windowSetDefaultIconFromFile iconPath
 
@@ -154,10 +156,14 @@ main = do
             )
             
             (\e -> do  
-                postGUISync $ 
-                    textBufferInsertAtCursor logBuffer $
-                        --"Thread exited with exception:  " ++ show e 
-                        "Encryption failed. Make you you have a plaintext file selected, and a public key selected.\n"
+            
+                case e of
+                    Left err -> postGUISync $ 
+                        textBufferInsertAtCursor logBuffer $
+                            " • Encryption failed. Make sure that you have a plaintext file selected, and a public key selected.\n"
+                    
+                    Right _ -> return ()
+                
                         
                 widgetSetSensitive encryptButton True
                 widgetSetSensitive plaintextFileChooser True
@@ -191,7 +197,7 @@ main = do
                                               -- HA! I get it! the computation is all taking place in a thunk which is passed to the main gui through
                                               -- Async!! Ha.    
                                 
-                            --TODO: Assumes the Maybe is Just. If not, it's caught by ForkFinally,
+                           ou  --TODO: Assumes the Maybe is Just. If not, it's caught by ForkFinally,
                             --but still should be fixed to give an informative message
                             m <- decryptFile (fromJust ciphertextFilePath) (fromJust privateKeyFilePath)
        
@@ -204,15 +210,18 @@ main = do
                             widgetSetSensitive ciphertextFileChooser True
                         )
                        (\e -> do
-                            --putStrLn ("Thread exited with exception " ++ show e)
-                            postGUISync $ 
-                                 textBufferInsertAtCursor logBuffer $
-                                     " Decryption has failed. Make sure you have a ciphertext file selected, and a private key selected.\n"
                             
+                            case e of
+                                Left err -> postGUISync $ 
+                                        textBufferInsertAtCursor logBuffer $
+                                                " • Decryption failed. Make sure that you have a ciphertext file selected, and a private key selected.\n"
+                                Right _ -> return ()
+                
                             widgetSetSensitive decryptButton True
                             widgetSetSensitive ciphertextFileChooser True
                        )
                  return()   
+                 
                  
                               
      mainWindow `on` deleteEvent $ do
