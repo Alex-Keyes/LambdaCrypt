@@ -197,7 +197,7 @@ main = do
                                               -- HA! I get it! the computation is all taking place in a thunk which is passed to the main gui through
                                               -- Async!! Ha.    
                                 
-                           ou  --TODO: Assumes the Maybe is Just. If not, it's caught by ForkFinally,
+                            --TODO: Assumes the Maybe is Just. If not, it's caught by ForkFinally,
                             --but still should be fixed to give an informative message
                             m <- decryptFile (fromJust ciphertextFilePath) (fromJust privateKeyFilePath)
        
@@ -212,7 +212,7 @@ main = do
                        (\e -> do
                             
                             case e of
-                                Left err -> postGUISync $ 
+                                Left _ -> postGUISync $ 
                                         textBufferInsertAtCursor logBuffer $
                                                 " • Decryption failed. Make sure that you have a ciphertext file selected, and a private key selected.\n"
                                 Right _ -> return ()
