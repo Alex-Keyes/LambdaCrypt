@@ -13,7 +13,8 @@ executable LambdaCrypt
   build-depends:  base >= 4,
                   gtk3 >= 0.12.5.0,
                   random >= 1,
-                  mtl >= 2
+                  mtl >= 2,
+                  glib
 
   ghc-options:    -O2 -threaded -Wall -fno-warn-unused-do-bind
   other-modules:   

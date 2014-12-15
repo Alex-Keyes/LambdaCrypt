@@ -10,9 +10,9 @@ import Control.Monad.Trans(liftIO)
 import Data.Maybe
 import Control.Concurrent
 
+import System.Glib.UTFString
 
 import Paths_LambdaCrypt
-
 
 
   
@@ -86,15 +86,15 @@ main = do
         textBufferDelete logBuffer start end
 
      copyButton `on` buttonActivated  $ do
-        txt <- get logBuffer (textBufferText)
+        txt <- get logBuffer textBufferText
         cb <- clipboardGet selectionClipboard
-        clipboardSetText cb txt    
+        clipboardSetText cb (txt :: String)    
 
    
      mainWindow `on` keyPressEvent $ do
            k <- eventKeyVal 
            liftIO $ do
-              if keyName k == "Escape"
+              if keyName k == (stringToGlib "Escape" )
                   then mainQuit
                   else return ()
            return False
